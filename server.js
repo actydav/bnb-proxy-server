@@ -16,9 +16,9 @@ const port = process.env.PORT || 3000; // Usa el puerto 3000 si no se especifica
 const BNB_ACCOUNT_ID = 's9CG8FE7Id75ef2jeX9bUA=='; 
 const BNB_AUTHORIZATION_ID = '713K7PvTlACs1gdmv9jGgA=='; 
 
-const BNB_AUTH_URL = 'http://test.bnb.com.bo/ClientAuthentication.API/api/v1/auth/token';
-const BNB_QR_GEN_URL = 'http://test.bnb.com.bo/QRSimple.API/api/v1/main/getQRWithImageAsync';
-const BNB_QR_STATUS_URL = 'http://test.bnb.com.bo/QRSimple.API/api/v1/main/getQRStatusAsync';
+const BNB_AUTH_URL = 'https://test.bnb.com.bo/ClientAuthentication.API/api/v1/auth/token';
+const BNB_QR_GEN_URL = 'https://test.bnb.com.bo/QRSimple.API/api/v1/main/getQRWithImageAsync';
+const BNB_QR_STATUS_URL = 'https://test.bnb.com.bo/QRSimple.API/api/v1/main/getQRStatusAsync';
 
 
 // ===============================================
@@ -146,4 +146,5 @@ app.post('/api/bnb/check-status', async (req, res) => {
 // Inicia el servidor
 app.listen(port, () => {
     console.log(`BNB Proxy Server escuchando en http://localhost:${port}`);
+
 });
