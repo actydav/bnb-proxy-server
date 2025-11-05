@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Ingresos y Egresos - U.E. Cándida María de Jesús Fe y Alegría</title>
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- CDN Libraries -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="website icon" type="link" href="https://th.bing.com/th/id/R.9c3a9357a9f172a16eed85d089e20105?rik=HJxKlwArhum6bQ&pid=ImgRaw&r=0">
+</head>
+
+<body class="bg-gray-100">
+  <header class="fya-red text-white p-4 text-center">
+    <div class="imagen-cont">
+      <a href="https://www.feyalegria.org/historia/" target="_blank">
+        <img src="https://th.bing.com/th/id/R.9c3a9357a9f172a16eed85d089e20105?rik=HJxKlwArhum6bQ&pid=ImgRaw&r=0" alt="Logo Fe y Alegría" class="h-16 mx-auto mb-2">
+        <div class="imagen-op">
+            <p>Logo Fe y Alegría</p>
+        </div>
+      </a>
+    </div>
+    
+    <!-- Botón de menú lateral -->
+    <button class="toggle-menu">☰</button>
+    <div class="menu-lateral">
+        <nav class="main-nav">
+            <ul>
+                <li target="_blank" title="Ubicación de la U.E.">
+                  <a class="btn-1" href="https://www.google.com/maps/place/U.E.+Candida+Ma.+de+Jes%C3%BAs+Fe+Y+Alegria/@-17.8614149,-63.1702947,16z/data=!4m6!3m5!1s0x93f1ea27a24f6a73:0xe6a89a8f30cc83fe!8m2!3d-17.861752!4d-63.1702563!16s%2Fg%2F11dxbvwtr9?entry=ttu&g_ep=EgoyMDI1MDgzMC4wIKXMDSoASAFQAw%3D%3D">
+                    Ubicación de la U.E.
+                  </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    
+    <!-- Título principal -->
+    <h1 class="text-3xl font-bold">U.E. Cándida María de Jesús Fe y Alegría</h1>
+    <p class="text-lg">Gestión de Ingresos y Egresos</p>
+  </header>
+
+  <!-- Contenido principal -->
+  <div id="app" class="container mx-auto p-6">
+    <!-- Pantalla de Login -->
+    <div id="login-screen" class="max-w-md mx-auto fya-white p-6 rounded-lg shadow-lg">
+      <h2 class="text-2xl font-bold mb-4 text-center fya-red-text">Iniciar Sesión</h2>
+      <div class="mb-4">
+        <label class="block text-sm font-medium fya-red-text">Tipo de usuario</label>
+        <select id="user-type" class="w-full p-2 border rounded">
+          <option value="admin">Encargado</option>
+          <option value="parent">Estudiante/PPMMFF</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium fya-red-text">Carnet de Identidad</label>
+        <input type="text" id="ci" class="w-full p-2 border rounded" placeholder="Ingrese su C.I.">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium fya-red-text">Contraseña</label>
+        <input type="password" id="password" class="w-full p-2 border rounded" placeholder="Ingrese su contraseña">
+      </div>
+      <button onclick="login()" class="w-full fya-red text-white p-2 rounded hover:bg-red-700 animate-bounce-btn">Iniciar Sesión</button>
+      <p class="mt-4 text-center">¿Nuevo usuario? <a href="#" onclick="showRegister()" class="fya-red-text">Regístrate</a></p>
+    </div>
+
+    <!-- Pantalla de Registro -->
+    <div id="register-screen" class="hidden max-w-md mx-auto fya-white p-6 rounded-lg shadow-lg">
+      <h2 class="text-2xl font-bold mb-4 text-center fya-red-text">Registro</h2>
+      
+      <!-- Campos básicos -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium fya-red-text">Nombre(s)</label>
+        <input type="text" id="reg-first-name" class="w-full p-2 border rounded" placeholder="Nombre(s)">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium fya-red-text">Apellido Paterno</label>
+        <input type="text" id="reg-last-name-paternal" class="w-full p-2 border rounded" placeholder="Apellido Paterno">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium fya-red-text">Apellido Materno</label>
+        <input type="text" id="reg-last-name-maternal" class="w-full p-2 border rounded" placeholder="Apellido Materno">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium fya-red-text">Carnet de Identidad</label>
+        <input type="text" id="reg-ci" class="w-full p-2 border rounded" placeholder="C.I. del estudiante">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium fya-red-text">Contraseña</label>
+        <input type="password" id="reg-password" class="w-full p-2 border rounded" placeholder="Crea una contraseña">
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium fya-red-text">Grado</label>
+        <select id="reg-grade" class="w-full p-2 border rounded">
+          <option value="1ro">1ro Secundaria</option>
+          <option value="2do">2do Secundaria</option>
+          <option value="3ro">3ro Secundaria</option>
+          <option value="4to">4to Secundaria</option>
+          <option value="5to">5to Secundaria</option>
+          <option value="6to">6to Secundaria</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium fya-red-text">Paralelo</label>
+        <select id="reg-parallel" class="w-full p-2 border rounded">
+          <option value="Verde">Verde</option>
+          <option value="Blanco">Blanco</option>
+        </select>
+      </div>
+      
+      <!-- Sección de enlace de hermanos -->
+      <div class="mb-4 p-4 border rounded-lg bg-gray-50">
+        <h3 class="text-lg font-semibold fya-red-text mb-3">Enlazar con Hermano (Opcional)</h3>
+        <div class="mb-3">
+          <label class="block text-sm font-medium fya-red-text">¿Tiene hermanos en la U.E.?</label>
+          <select id="has-siblings" class="w-full p-2 border rounded" onchange="toggleSiblingFields()">
+            <option value="no">No</option>
+            <option value="yes">Sí</option>
+          </select>
+        </div>
+        
+        <div id="sibling-fields" class="hidden space-y-3">
+          <div>
+            <label class="block text-sm font-medium fya-red-text">CI del Hermano</label>
+            <input type="text" id="sibling-ci" class="w-full p-2 border rounded" placeholder="C.I. del hermano">
+          </div>
+          <div>
+            <label class="block text-sm font-medium fya-red-text">¿Quién pagará la mensualidad?</label>
+            <select id="payment-responsibility" class="w-full p-2 border rounded">
+              <option value="me">Yo pagaré</option>
+              <option value="sibling">Mi hermano pagará</option>
+            </select>
+          </div>
+          <button type="button" onclick="verifySibling()" class="w-full fya-red text-white p-2 rounded hover:bg-red-700 animate-bounce-btn">
+            Verificar Hermano
+          </button>
+          <div id="sibling-verification-result" class="text-sm mt-2 hidden"></div>
+        </div>
+      </div>
+
+      <button onclick="register()" class="w-full fya-red text-white p-2 rounded hover:bg-red-700 animate-bounce-btn">Registrar</button>
+      <p class="mt-4 text-center"><a href="#" onclick="showLogin()" class="fya-red-text">Volver a Iniciar Sesión</a></p>
+    </div>
+
+    <!-- Panel del Administrador -->
+    <div id="admin-panel" class="hidden">
+      <button onclick="openAdminModal()" class="fya-red text-white p-2 rounded mb-4 hover:bg-red-700 animate-bounce-btn">Abrir Panel del Encargado</button>
+      <button onclick="logout()" class="fya-red text-white p-2 rounded mb-4 hover:bg-red-700 animate-bounce-btn">Cerrar Sesión</button>
+      <button onclick="linkSiblings()" class="fya-red text-white p-2 rounded mt-2 hover:bg-red-700 animate-bounce-btn">Enlazar Hermanos</button>
+    </div>
+
+    <!-- Panel del Estudiante/Padre -->
+    <div id="parent-panel" class="hidden p-6 bg-gray-100 rounded-lg shadow-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold fya-red-text">Informe del Estudiante</h2>
+        <button onclick="logout()" class="fya-red text-white p-2 rounded hover:bg-red-700 animate-bounce-btn">
+          Cerrar Sesión
+        </button>
+      </div>
+      <div id="parent-report" class="fya-white p-6 rounded-lg shadow-lg"></div>
+     
+      <div id="parent-chart-container" class="mt-4 hidden">
+        <canvas id="parent-payment-chart"></canvas>
+      </div> 
+    </div>
+
+    <!-- Modal del Administrador -->
+    <div id="admin-modal" class="modal">
+      <div class="modal-content">
+        <span class="modal-close" onclick="closeAdminModal()">&times;</span>
+        <h2 class="text-2xl font-bold mb-4 fya-red-text modal-header">Panel del Encargado</h2>
+        <div class="tabs">
+          <button class="tab-button active" onclick="openTab('courses')">Cursos y Paralelos</button>
+          <button class="tab-button" onclick="openTab('search')">Estudiantes</button>
+          <button class="tab-button" onclick="openTab('income')">Ingresos</button>
+          <button class="tab-button" onclick="openTab('expenses')">Egresos</button>
+          <button onclick="actualizarCredencialesBNB(prompt('Nueva Authorization ID (mín. 15 caracteres):'))" class="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">Actualizar Credenciales BNB</button>
+        </div>
+        
+        <!-- Contenido de las pestañas -->
+        <div id="courses-tab" class="tab-content active">
+          <div class="form-group">
+            <h3 class="text-xl font-semibold mb-2 fya-red-text">Seleccionar Curso y Paralelo</h3>
+            <div class="mb-2">
+              <label class="block text-sm font-medium fya-red-text">Grado</label>
+              <select id="admin-grade" class="w-full p-2 border rounded" onchange="filterStudentsByGradeAndParallel()">
+                <option value="">Todos los grados</option>
+                <option value="1ro">1ro Secundaria</option>
+                <option value="2do">2do Secundaria</option>
+                <option value="3ro">3ro Secundaria</option>
+                <option value="4to">4to Secundaria</option>
+                <option value="5to">5to Secundaria</option>
+                <option value="6to">6to Secundaria</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="block text-sm font-medium fya-red-text">Paralelo</label>
+              <select id="admin-parallel" class="w-full p-2 border rounded" onchange="filterStudentsByGradeAndParallel()">
+                <option value="">Todos los paralelos</option>
+                <option value="Verde">Verde</option>
+                <option value="Blanco">Blanco</option>
+              </select>
+            </div>
+            <h3 class="text-xl font-semibold mb-2 fya-red-text">Lista de Estudiantes</h3>
+            <div id="student-list" class="max-h-40 overflow-y-auto border rounded p-2"></div>
+          </div>
+          <div class="col-span-2 mt-4">
+            <div class="course-stats">
+              <div class="stat-card">
+                <div class="stat-number" id="total-students">0</div>
+                <div class="stat-label">Estudiantes</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="total-income">$0</div>
+                <div class="stat-label">Ingresos Totales</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="pending-amount">$0</div>
+                <div class="stat-label">Montos Pendientes</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="up-to-date">0</div>
+                <div class="stat-label">Al Día</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="search-tab" class="tab-content">
+          <div class="form-group">
+            <h3 class="text-xl font-semibold fya-red-text">Buscar Estudiante</h3>
+            <div class="flex gap-2">
+              <input type="text" id="search-student" class="p-2 border rounded flex-1" placeholder="Buscar por nombre o CI">
+              <button onclick="searchStudent()" class="fya-red text-white p-2 rounded hover:bg-red-700 animate-bounce-btn">Buscar</button>
+            </div>
+            <div id="student-details" class="fya-white p-4 rounded-lg shadow-lg mt-4">
+              <h3 class="text-xl font-semibold mb-2 fya-red-text">Detalles del Estudiante</h3>
+              <p>Seleccione un estudiante para ver sus datos o use la búsqueda.</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="income-tab" class="tab-content">
+          <div class="form-group">
+            <h3 class="text-xl font-semibold fya-red-text">Añadir o Eliminar Concepto de Ingreso</h3>
+            <div class="flex gap-2 mb-2">
+              <input type="text" id="new-concept" class="p-2 border rounded" placeholder="Ej: Mensualidad,...">
+              <button onclick="addConcept()" class="fya-red text-white p-2 rounded hover:bg-red-700 animate-bounce-btn">Añadir Concepto</button>
+            </div>
+            <div class="mb-2">
+              <label class="block text-sm font-medium fya-red-text">Eliminar Concepto</label>
+              <select id="delete-concept" class="w-full p-2 border rounded mb-2">
+                <option value="">Seleccione un concepto</option>
+              </select>
+              <button onclick="deleteConcept()" class="fya-red text-white p-2 rounded hover:bg-red-700 animate-bounce-btn">Eliminar Concepto</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="expenses-tab" class="tab-content">
+          <div class="form-group">
+            <h3 class="text-xl font-semibold fya-red-text">Añadir o Eliminar Concepto de Egreso</h3>
+            <div class="flex gap-2 mb-2">
+              <input type="text" id="new-expense" class="p-2 border rounded" placeholder="Ej: Compra de...">
+              <button onclick="addExpense()" class="fya-red text-white p-2 rounded hover:bg-red-700 animate-bounce-btn">Añadir Egreso</button>
+            </div>
+            <div class="mb-2">
+              <label class="block text-sm font-medium fya-red-text">Eliminar Egreso</label>
+              <select id="delete-expense" class="w-full p-2 border rounded mb-2">
+                <option value="">Seleccione un concepto</option>
+              </select>
+              <button onclick="deleteExpense()" class="fya-red text-white p-2 rounded hover:bg-red-700 animate-bounce-btn">Eliminar Egreso</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- pagos por bnb -->
+  <div id="bnb-qr-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-xl shadow-2xl max-w-md w-full mx-4">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold fya-red-text">Pagar con BNB</h3>
+        <button onclick="closeBnbModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+      </div>
+
+      <div class="text-center mb-4">
+        <p class="text-sm text-gray-600 mb-3">Escanea con tu app BNB</p>
+        <div id="bnb-qr-container" class="flex justify-center mb-4">
+          <canvas id="bnb-qr-canvas"></canvas>
+        </div>
+        <p class="text-xs text-gray-500">ID: <span id="bnb-qr-id" class="font-mono"></span></p>
+        <p class="text-sm font-semibold text-green-600 mt-2" id="bnb-status">Esperando pago...</p>
+      </div>
+
+      <div class="text-center">
+        <button onclick="closeBnbModal()" class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- codigos de java -->
+  <script src="firebase-config.js"></script>
+  <script src="firebase-services.js"></script>
+  <script src="auth.js"></script>
+  <script src="admin.js"></script>
+  <script src="parent.js"></script>
+  <script src="bnb-payment.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
